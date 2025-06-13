@@ -13,7 +13,7 @@ INGREDIENT_PRICES = {
     "sauce": 0.3,
 }
 
-# Liste blanche des options pour chaque ingrédient
+# Listes blanches des options pour chaque ingrédient
 ALLOWED_BUNS = ["classic", "sesame", "wholewheat"]
 ALLOWED_MEATS = ["beef", "chicken"]
 ALLOWED_SAUCES = ["ketchup", "mayo", "bbq", "mustard", "sauce"]
@@ -25,12 +25,17 @@ TMP_DIR.mkdir(parents=True, exist_ok=True)
 BURGER_FILE = TMP_DIR / "burger.txt"
 COUNT_FILE = TMP_DIR / "burger_count.txt"
 
+
 def get_order_timestamp():
     """Retourne la date et l'heure actuelles sous forme de chaîne."""
-    return datetime.now().isoformat(sep=' ', timespec='seconds')
-        
+    return datetime.now().isoformat(sep=" ", timespec="seconds")
+
+
 def ask_choice(prompt, allowed, max_attempts=3):
-    """Demande à l'utilisateur de choisir parmi une liste autorisée, avec un nombre limité de tentatives."""
+    """
+    Demande à l'utilisateur de choisir parmi une liste autorisée,
+    avec un nombre limité de tentatives.
+    """
     attempts = 0
     while attempts < max_attempts:
         choice = input(f"{prompt} ({'/'.join(allowed)}): ").strip().lower()
@@ -49,8 +54,12 @@ def calculate_burger_price(ingredients_list):
         total += INGREDIENT_PRICES.get(ingredient, 0)
     return round(total * 1.2, 2)  # Taxe de 20%, arrondi à 2 décimales
 
+
 def assemble_burger():
-    """Assemble le burger à partir des choix utilisateur et retourne sa description et son prix."""
+    """
+    Assemble le burger à partir des choix utilisateur
+    et retourne sa description et son prix.
+    """
     bun = ask_choice("What kind of bun would you like?", ALLOWED_BUNS)
     meat = ask_choice("Enter the meat type", ALLOWED_MEATS)
     sauce = ask_choice("What sauce would you like?", ALLOWED_SAUCES)
@@ -67,23 +76,29 @@ def assemble_burger():
 
     return burger_description, price, timestamp
 
+
 def load_burger_count():
     """Charge le nombre de burgers fabriqués depuis le fichier sécurisé."""
     try:
         if COUNT_FILE.exists():
-            with open(COUNT_FILE, "r") as f:
+            with open(COUNT_FILE, "r", encoding="utf-8") as f:
                 count = int(f.read())
                 return count
     except Exception:
         pass
     return 0
 
+
 def save_burger(burger, price, timestamp, count):
-    """Sauvegarde la description du burger, son prix et la date dans un fichier sécurisé."""
+    """
+    Sauvegarde la description du burger, son prix et la date dans un fichier sécurisé.
+    """
     try:
-        with open(BURGER_FILE, "w") as f:
-            f.write(f"Burger: {burger}\nPrice: {price:.2f} €\nTimestamp: {timestamp}\n")
-        with open(COUNT_FILE, "w") as f:
+        with open(BURGER_FILE, "w", encoding="utf-8") as f:
+            f.write(
+                f"Burger: {burger}\nPrice: {price:.2f} €\nTimestamp: {timestamp}\n"
+            )
+        with open(COUNT_FILE, "w", encoding="utf-8") as f:
             f.write(str(count))
         os.chmod(BURGER_FILE, 0o600)  # Lecture/écriture propriétaire seulement
         os.chmod(COUNT_FILE, 0o600)
@@ -91,7 +106,9 @@ def save_burger(burger, price, timestamp, count):
     except Exception as e:
         print(f"Failed to save burger: {e}")
 
+
 def main():
+    """Point d'entrée principal du script."""
     print("Welcome to the secure burger maker!")
     burger_count = load_burger_count()
     try:
